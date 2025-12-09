@@ -235,7 +235,7 @@ export default function DashboardClient({ user, documents }: any) {
       <Dialog open={!!activeText} onOpenChange={() => setActiveText(null)}>
         <DialogContent className="max-w-[95vw] w-full h-[95vh] flex flex-col">
 
-          <div className="bg-white w-[820px] max-w-full mx-auto flex flex-col p-6 rounded-md h-full">
+          <div className="bg-white w-[820px] max-w-full mx-auto flex flex-col p-1 rounded-md h-full">
 
             <DialogHeader>
               <DialogTitle className="text-xl">
