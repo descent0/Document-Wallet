@@ -235,34 +235,48 @@ export default function DashboardClient({ user, documents }: any) {
         </Card>
       </main>
 
-      <Dialog open={!!activeText} onOpenChange={() => setActiveText(null)}>
-  <DialogContent className="border-none bg-transparent shadow-none flex items-center justify-center overflow-auto">
-    
-    {/* ✅ A4 PAGE FIXED WIDTH */}
-    <div
-      className="bg-white shadow-xl flex flex-col p-6 rounded-md"
-      style={{
-        width: "210mm",
-        minWidth: "210mm",
-        maxWidth: "210mm",
-        height: "297mm",
-      }}
-    >
-      <DialogHeader>
-        <DialogTitle className="text-xl">
-          Extracted Text (Raw Format)
-        </DialogTitle>
-      </DialogHeader>
+     <Dialog open={!!activeText} onOpenChange={() => setActiveText(null)}>
+  <DialogContent className="border-none bg-transparent shadow-none flex items-center justify-center overflow-hidden max-w-none">
 
-      {/* ✅ ONLY CONTENT SCROLLS */}
-      <div className="bg-slate-50 rounded-lg p-4 overflow-y-auto flex-1 mt-4">
-        <pre className="whitespace-pre text-base font-mono leading-normal">
-          {activeText}
-        </pre>
+    {/* ✅ OUTER RESPONSIVE CONTAINER */}
+    <div className="w-[90vw] max-w-[900px] flex justify-center">
+
+      {/* ✅ SCALE WRAPPER */}
+      <div
+        className="origin-top"
+        style={{
+          transform: "scale(0.85)",   // ✅ AUTO SCALE CONTROL
+        }}
+      >
+
+        {/* ✅ REAL A4 WIDTH (VISUAL ONLY) */}
+        <div
+          className="
+            bg-white shadow-xl flex flex-col p-6 rounded-md
+            w-[820px]    /* ✅ A4 visual width */
+            h-[90vh]     /* ✅ Scroll height */
+          "
+        >
+          <DialogHeader>
+            <DialogTitle className="text-xl">
+              Extracted Text (Raw Format)
+            </DialogTitle>
+          </DialogHeader>
+
+          {/* ✅ ONLY CONTENT SCROLLS */}
+          <div className="bg-slate-50 rounded-lg p-4 overflow-y-auto flex-1 mt-4">
+            <pre className="whitespace-pre text-base font-mono leading-normal">
+              {activeText}
+            </pre>
+          </div>
+
+        </div>
       </div>
     </div>
+
   </DialogContent>
 </Dialog>
+
 
     </div>
   );
