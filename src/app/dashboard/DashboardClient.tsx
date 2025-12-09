@@ -235,47 +235,30 @@ export default function DashboardClient({ user, documents }: any) {
         </Card>
       </main>
 
-     <Dialog open={!!activeText} onOpenChange={() => setActiveText(null)}>
-  <DialogContent
-    className="border-none bg-transparent shadow-none flex items-center justify-center max-w-none"
-  >
-    {/* ✅ Outer viewport */}
-    <div className="w-full flex justify-center px-4">
+   <Dialog open={!!activeText} onOpenChange={() => setActiveText(null)}>
+  <DialogContent className="max-w-[95vw] w-full h-[95vh] p-0">
 
-      {/* ✅ Auto-scaling wrapper */}
-      <div
-        className="origin-top"
-        style={{
-          transform: "scale(0.9)",   // ✅ tune 0.8–1 safely
-        }}
-      >
-        {/* ✅ A4 visual width */}
-        <div
-          className="
-            bg-white shadow-xl flex flex-col p-6 rounded-md
-            w-[820px]
-            h-[90vh]
-            overflow-hidden
-          "
-        >
-          <DialogHeader>
-            <DialogTitle className="text-xl">
-              Text (Raw Format)
-            </DialogTitle>
-          </DialogHeader>
+    {/* ✅ TRUE A4 WIDTH WITHOUT SCALING */}
+    <div className="bg-white w-[820px] max-w-full mx-auto h-full flex flex-col p-6 rounded-md">
 
-          {/* ✅ SCROLL CONTAINER — BOTH AXES SAFE */}
-          <div className="bg-slate-50 rounded-lg p-4 flex-1 mt-4 overflow-auto">
-            <pre className="whitespace-pre text-base font-mono leading-normal min-w-full">
-              {activeText}
-            </pre>
-          </div>
+      <DialogHeader>
+        <DialogTitle className="text-xl">
+          Text (Raw Format)
+        </DialogTitle>
+      </DialogHeader>
 
-        </div>
+      {/* ✅ BOTH SCROLLBARS ENABLED — NO CUT, NO WRAP */}
+      <div className="bg-slate-50 rounded-lg p-4 flex-1 mt-4 overflow-auto">
+        <pre className="whitespace-pre font-mono text-[14px] leading-6">
+          {activeText}
+        </pre>
       </div>
+
     </div>
+
   </DialogContent>
 </Dialog>
+
 
 
     </div>
