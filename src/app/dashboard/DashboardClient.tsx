@@ -236,35 +236,39 @@ export default function DashboardClient({ user, documents }: any) {
       </main>
 
      <Dialog open={!!activeText} onOpenChange={() => setActiveText(null)}>
-  <DialogContent className="border-none bg-transparent shadow-none flex items-center justify-center overflow-hidden max-w-none">
+  <DialogContent
+    className="
+      border-none bg-transparent shadow-none
+      flex items-center justify-center
+      overflow-visible max-w-none
+    "
+  >
+    {/* ✅ RESPONSIVE VIEWPORT WRAPPER */}
+    <div className="w-full flex justify-center overflow-visible">
 
-    {/* ✅ OUTER RESPONSIVE CONTAINER */}
-    <div className="w-[90vw] max-w-[900px] flex justify-center">
-
-      {/* ✅ SCALE WRAPPER */}
+      {/* ✅ SCALE FIX WRAPPER (NO CUTTING NOW) */}
       <div
-        className="origin-top"
+        className="origin-top flex justify-center"
         style={{
-          transform: "scale(0.85)",   // ✅ AUTO SCALE CONTROL
+          transform: "scale(0.85)",   // ✅ You can tune this
         }}
       >
-
-        {/* ✅ REAL A4 WIDTH (VISUAL ONLY) */}
+        {/* ✅ TRUE A4 VISUAL WIDTH */}
         <div
           className="
             bg-white shadow-xl flex flex-col p-6 rounded-md
-            w-[820px]    /* ✅ A4 visual width */
-            h-[90vh]     /* ✅ Scroll height */
+            w-[820px]
+            h-[90vh]
           "
         >
           <DialogHeader>
             <DialogTitle className="text-xl">
-              Extracted Text (Raw Format)
+              Text (Raw Format)
             </DialogTitle>
           </DialogHeader>
 
-          {/* ✅ ONLY CONTENT SCROLLS */}
-          <div className="bg-slate-50 rounded-lg p-4 overflow-y-auto flex-1 mt-4">
+          {/* ✅ ONLY TEXT SCROLLS — NO SIDE CLIP */}
+          <div className="bg-slate-50 rounded-lg p-4 overflow-y-auto flex-1 mt-4 overflow-x-hidden">
             <pre className="whitespace-pre text-base font-mono leading-normal">
               {activeText}
             </pre>
@@ -273,7 +277,6 @@ export default function DashboardClient({ user, documents }: any) {
         </div>
       </div>
     </div>
-
   </DialogContent>
 </Dialog>
 
