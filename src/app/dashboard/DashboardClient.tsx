@@ -18,7 +18,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { LogOut, Upload, FileText, User, Mail, Eye, Download } from "lucide-react";
+import { LogOut, Upload, FileText, User, Mail, Download } from "lucide-react";
 import mammoth from "mammoth";
 
 export default function DashboardClient({ user, documents }: any) {
@@ -53,51 +53,47 @@ export default function DashboardClient({ user, documents }: any) {
     setFile(f);
   }
 
-  // tried too many times doing it on server but  ONLY SAFE WAY TO PARSE PDF WITH TURBOPACK
   async function extractPdf(file: File) {
-  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+    const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
 
-  pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-    "pdfjs-dist/legacy/build/pdf.worker.min.mjs",
-    import.meta.url
-  ).toString();
+    pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+      "pdfjs-dist/legacy/build/pdf.worker.min.mjs",
+      import.meta.url
+    ).toString();
 
-  const arrayBuffer = await file.arrayBuffer();
-  const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
 
-  let text = "";
+    let text = "";
 
-  for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i);
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
 
-    const content = await page.getTextContent({
-  disableCombineTextItems: true,
-} as any);
+      const content = await page.getTextContent({
+        disableCombineTextItems: true,
+      } as any);
 
+      let lastY: number | null = null;
 
-    let lastY: number | null = null;
+      const pageText = content.items
+        .map((item: any) => {
+          const currentY = item.transform[5];
 
+          let lineBreak = "";
+          if (lastY !== null && Math.abs(currentY - lastY) > 5) {
+            lineBreak = "\n";
+          }
 
-    const pageText = content.items
-      .map((item: any) => {
-        const currentY = item.transform[5];
+          lastY = currentY;
+          return lineBreak + item.str;
+        })
+        .join("");
 
-        let lineBreak = "";
-        if (lastY !== null && Math.abs(currentY - lastY) > 5) {
-          lineBreak = "\n";
-        }
+      text += pageText + "\n\n";
+    }
 
-        lastY = currentY;
-        return lineBreak + item.str; 
-      })
-      .join(""); 
-
-    text += pageText + "\n\n";
+    return text;
   }
-
-  return text;
-}
-
 
   async function handleUpload() {
     if (!file) return;
@@ -235,31 +231,29 @@ export default function DashboardClient({ user, documents }: any) {
         </Card>
       </main>
 
-   <Dialog open={!!activeText} onOpenChange={() => setActiveText(null)}>
-  <DialogContent className="max-w-[95vw] w-full h-[95vh] p-0">
+      {/* ✅ FIXED TEXT VIEWER MODAL */}
+      <Dialog open={!!activeText} onOpenChange={() => setActiveText(null)}>
+        <DialogContent className="max-w-[95vw] w-full h-[95vh] flex flex-col">
 
-    {/* ✅ TRUE A4 WIDTH WITHOUT SCALING */}
-    <div className="bg-white w-[820px] max-w-full mx-auto h-full flex flex-col p-6 rounded-md">
+          <div className="bg-white w-[820px] max-w-full mx-auto flex flex-col p-6 rounded-md h-full">
 
-      <DialogHeader>
-        <DialogTitle className="text-xl">
-          Text (Raw Format)
-        </DialogTitle>
-      </DialogHeader>
+            <DialogHeader>
+              <DialogTitle className="text-xl">
+                Text (Raw Format)
+              </DialogTitle>
+            </DialogHeader>
 
-      {/* ✅ BOTH SCROLLBARS ENABLED — NO CUT, NO WRAP */}
-      <div className="bg-slate-50 rounded-lg p-4 flex-1 mt-4 overflow-auto">
-        <pre className="whitespace-pre font-mono text-[14px] leading-6">
-          {activeText}
-        </pre>
-      </div>
+            {/* ✅ SCROLL WORKS 100% */}
+            <div className="bg-slate-50 rounded-lg p-4 mt-4 flex-1 overflow-auto">
+              <pre className="whitespace-pre font-mono text-[14px] leading-6">
+                {activeText}
+              </pre>
+            </div>
 
-    </div>
+          </div>
 
-  </DialogContent>
-</Dialog>
-
-
+        </DialogContent>
+      </Dialog>
 
     </div>
   );
