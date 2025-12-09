@@ -237,28 +237,25 @@ export default function DashboardClient({ user, documents }: any) {
 
      <Dialog open={!!activeText} onOpenChange={() => setActiveText(null)}>
   <DialogContent
-    className="
-      border-none bg-transparent shadow-none
-      flex items-center justify-center
-      overflow-visible max-w-none
-    "
+    className="border-none bg-transparent shadow-none flex items-center justify-center max-w-none"
   >
-    {/* ✅ RESPONSIVE VIEWPORT WRAPPER */}
-    <div className="w-full flex justify-center overflow-visible">
+    {/* ✅ Outer viewport */}
+    <div className="w-full flex justify-center px-4">
 
-      {/* ✅ SCALE FIX WRAPPER (NO CUTTING NOW) */}
+      {/* ✅ Auto-scaling wrapper */}
       <div
-        className="origin-top flex justify-center"
+        className="origin-top"
         style={{
-          transform: "scale(0.85)",   // ✅ You can tune this
+          transform: "scale(0.9)",   // ✅ tune 0.8–1 safely
         }}
       >
-        {/* ✅ TRUE A4 VISUAL WIDTH */}
+        {/* ✅ A4 visual width */}
         <div
           className="
             bg-white shadow-xl flex flex-col p-6 rounded-md
             w-[820px]
             h-[90vh]
+            overflow-hidden
           "
         >
           <DialogHeader>
@@ -267,9 +264,9 @@ export default function DashboardClient({ user, documents }: any) {
             </DialogTitle>
           </DialogHeader>
 
-          {/* ✅ ONLY TEXT SCROLLS — NO SIDE CLIP */}
-          <div className="bg-slate-50 rounded-lg p-4 overflow-y-auto flex-1 mt-4 overflow-x-hidden">
-            <pre className="whitespace-pre text-base font-mono leading-normal">
+          {/* ✅ SCROLL CONTAINER — BOTH AXES SAFE */}
+          <div className="bg-slate-50 rounded-lg p-4 flex-1 mt-4 overflow-auto">
+            <pre className="whitespace-pre text-base font-mono leading-normal min-w-full">
               {activeText}
             </pre>
           </div>
