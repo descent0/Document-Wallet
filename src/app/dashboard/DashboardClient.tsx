@@ -29,7 +29,6 @@ export default function DashboardClient({ user, documents }: any) {
   const [error, setError] = useState("");
   const [activeText, setActiveText] = useState<string | null>(null);
   const [loggingOut, setLoggingOut] = useState(false);
-  const [viewingDoc, setViewingDoc] = useState<any>(null);
 
   function handleFileChange(e: any) {
     const f = e.target.files[0];
@@ -56,31 +55,49 @@ export default function DashboardClient({ user, documents }: any) {
 
   // tried too many times doing it on server but  ONLY SAFE WAY TO PARSE PDF WITH TURBOPACK
   async function extractPdf(file: File) {
-    const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
 
-    pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-      "pdfjs-dist/legacy/build/pdf.worker.min.mjs",
-      import.meta.url
-    ).toString();
+  pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+    "pdfjs-dist/legacy/build/pdf.worker.min.mjs",
+    import.meta.url
+  ).toString();
 
-    const arrayBuffer = await file.arrayBuffer();
-    const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
 
-    let text = "";
+  let text = "";
 
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const content = await page.getTextContent();
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
 
-      const pageText = content.items
-        .map((item: any) => item.str)
-        .join(" ");
+    const content = await page.getTextContent({
+  disableCombineTextItems: true,
+} as any);
 
-      text += pageText + "\n";
-    }
 
-    return text;
+    let lastY: number | null = null;
+
+
+    const pageText = content.items
+      .map((item: any) => {
+        const currentY = item.transform[5];
+
+        let lineBreak = "";
+        if (lastY !== null && Math.abs(currentY - lastY) > 5) {
+          lineBreak = "\n";
+        }
+
+        lastY = currentY;
+        return lineBreak + item.str; 
+      })
+      .join(""); 
+
+    text += pageText + "\n\n";
   }
+
+  return text;
+}
+
 
   async function handleUpload() {
     if (!file) return;
@@ -219,17 +236,34 @@ export default function DashboardClient({ user, documents }: any) {
       </main>
 
       <Dialog open={!!activeText} onOpenChange={() => setActiveText(null)}>
-        <DialogContent className="max-w-3xl max-h-[80vh]">
-          <DialogHeader>
-            <DialogTitle>Extracted Text</DialogTitle>
-          </DialogHeader>
-          <div className="bg-slate-50 rounded-lg p-4 max-h-[60vh] overflow-y-auto">
-            <pre className="whitespace-pre-wrap text-sm font-mono">
-              {activeText}
-            </pre>
-          </div>
-        </DialogContent>
-      </Dialog>
+  <DialogContent className="border-none bg-transparent shadow-none flex items-center justify-center overflow-auto">
+    
+    {/* ✅ A4 PAGE FIXED WIDTH */}
+    <div
+      className="bg-white shadow-xl flex flex-col p-6 rounded-md"
+      style={{
+        width: "210mm",
+        minWidth: "210mm",
+        maxWidth: "210mm",
+        height: "297mm",
+      }}
+    >
+      <DialogHeader>
+        <DialogTitle className="text-xl">
+          Extracted Text (Raw Format)
+        </DialogTitle>
+      </DialogHeader>
+
+      {/* ✅ ONLY CONTENT SCROLLS */}
+      <div className="bg-slate-50 rounded-lg p-4 overflow-y-auto flex-1 mt-4">
+        <pre className="whitespace-pre text-base font-mono leading-normal">
+          {activeText}
+        </pre>
+      </div>
+    </div>
+  </DialogContent>
+</Dialog>
+
     </div>
   );
 }
